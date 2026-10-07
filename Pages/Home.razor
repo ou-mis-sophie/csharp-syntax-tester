@@ -1,6 +1,7 @@
 @page "/"
 @using Microsoft.CodeAnalysis
 @using Microsoft.CodeAnalysis.CSharp
+@using Basic.Reference.Assemblies
 
 <PageTitle>C# Syntax Tester</PageTitle>
 
@@ -61,50 +62,57 @@ public class Program
     private string ResultClass { get; set; } = "neutral";
 
     private void CheckSyntax()
+{
+    if (string.IsNullOrWhiteSpace(Code))
     {
-        if (string.IsNullOrWhiteSpace(Code))
-        {
-            ResultMessage = "Enter C# code before checking syntax.";
-            ResultClass = "neutral";
-            return;
-        }
+        ResultMessage = "Enter C# code before checking.";
+        ResultClass = "neutral";
+        return;
+    }
 
-        try
-        {
-            var options = new CSharpParseOptions(LanguageVersion.Latest);
+    try
+    {
+        var syntaxTree = CSharpSyntaxTree.ParseText(
+            Code,
+            new CSharpParseOptions(LanguageVersion.Latest)
+        );
 
-            var tree = CSharpSyntaxTree.ParseText(
-                Code,
-                options
+        var compilation = CSharpCompilation.Create(
+            "StudentCode",
+            new[] { syntaxTree },
+            ReferenceAssemblies.Net80,
+            new CSharpCompilationOptions(
+                OutputKind.ConsoleApplication
+            )
+        );
+
+        var hasErrors = compilation
+            .GetDiagnostics()
+            .Any(d =>
+                d.Severity == DiagnosticSeverity.Error
             );
 
-            var hasSyntaxErrors = tree
-                .GetDiagnostics()
-                .Any(d =>
-                    d.Severity == DiagnosticSeverity.Error
-                );
-
-            if (hasSyntaxErrors)
-            {
-                ResultMessage =
-                    "Syntax error detected. Review your code and try again.";
-
-                ResultClass = "error";
-            }
-            else
-            {
-                ResultMessage = "Syntax OK.";
-                ResultClass = "success";
-            }
-        }
-        catch
+        if (hasErrors)
         {
             ResultMessage =
-                "Unable to check syntax. Please try again.";
+                "Code error detected. Review your code and try again.";
 
             ResultClass = "error";
         }
+        else
+        {
+            ResultMessage = "Code OK.";
+            ResultClass = "success";
+        }
     }
+    catch
+    {
+        ResultMessage =
+            "Unable to check code. Please try again.";
+
+        ResultClass = "error";
+    }
+}
 
     private void Reset()
     {
