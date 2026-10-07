@@ -1,0 +1,106 @@
+@page "/"
+@using Microsoft.CodeAnalysis
+@using Microsoft.CodeAnalysis.CSharp
+
+<PageTitle>C# Syntax Tester</PageTitle>
+
+<main class="page-shell">
+    <section class="card">
+        <div class="header-row">
+            <div>
+                <h1>C# Syntax Tester</h1>
+                <p class="subtitle">Checks C# syntax only. No AI, autocomplete, debugging hints, or code execution.</p>
+            </div>
+            <span class="local-badge">Runs locally in your browser</span>
+        </div>
+
+        <label class="editor-label" for="codeEditor">C# code</label>
+        <textarea id="codeEditor"
+                  class="code-editor"
+                  spellcheck="false"
+                  autocomplete="off"
+                  autocapitalize="off"
+                  @bind="Code"
+                  @bind:event="oninput"></textarea>
+
+        <div class="button-row">
+            <button class="primary" @onclick="CheckSyntax">Check Syntax</button>
+            <button class="secondary" @onclick="Reset">Reset</button>
+            <button class="secondary" @onclick="Clear">Clear</button>
+        </div>
+
+        <section class="result-panel @ResultClass" aria-live="polite">
+            <div class="result-title">Result</div>
+            <div class="result-message">@ResultMessage</div>
+        </section>
+
+        <p class="privacy-note">
+            Your code stays in this browser tab. This page does not send student code to a server.
+        </p>
+    </section>
+</main>
+
+@code {
+    private const string StarterCode = """using System;
+
+public class Program
+{
+    public static void Main()
+    {
+        Console.WriteLine("Hello World");
+    }
+}
+""";
+
+    private string Code { get; set; } = StarterCode;
+    private string ResultMessage { get; set; } = "Ready.";
+    private string ResultClass { get; set; } = "neutral";
+
+    private void CheckSyntax()
+    {
+        if (string.IsNullOrWhiteSpace(Code))
+        {
+            ResultMessage = "Enter C# code before checking syntax.";
+            ResultClass = "neutral";
+            return;
+        }
+
+        try
+        {
+            var options = new CSharpParseOptions(LanguageVersion.Latest);
+            var tree = CSharpSyntaxTree.ParseText(Code, options);
+            var hasSyntaxErrors = tree.GetDiagnostics()
+                .Any(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error);
+
+            if (hasSyntaxErrors)
+            {
+                ResultMessage = "Syntax error detected. Review your code and try again.";
+                ResultClass = "error";
+            }
+            else
+            {
+                ResultMessage = "Syntax OK.";
+                ResultClass = "success";
+            }
+        }
+        catch
+        {
+            ResultMessage = "Unable to check syntax. Please try again.";
+            ResultClass = "error";
+        }
+    }
+
+    private void Reset()
+    {
+        Code = StarterCode;
+        ResultMessage = "Ready.";
+        ResultClass = "neutral";
+    }
+
+    private void Clear()
+    {
+        Code = string.Empty;
+        ResultMessage = "Ready.";
+        ResultClass = "neutral";
+    }
+}
