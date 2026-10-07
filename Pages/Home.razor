@@ -80,7 +80,7 @@ public class Program
         var compilation = CSharpCompilation.Create(
             "StudentCode",
             new[] { syntaxTree },
-            ReferenceAssemblies.Net80,
+            Basic.Reference.Assemblies.Net80.References.All,
             new CSharpCompilationOptions(
                 OutputKind.ConsoleApplication
             )
