@@ -47,14 +47,10 @@
 
 @code {
     private const string StarterCode = @"using System;
+using System.Collections.Generic;
 
-public class Program
-{
-    public static void Main()
-    {
-        Console.WriteLine(""Hello World"");
-    }
-}
+string[] courses = { ""MIS 3013"", ""MIS 3033"", ""MIS 3353"" };
+List<string> assignments = new List<string>();
 ";
 
     private string Code { get; set; } = StarterCode;
