@@ -9,12 +9,15 @@
         <div class="header-row">
             <div>
                 <h1>C# Syntax Tester</h1>
-                <p class="subtitle">Checks C# syntax only. No AI, autocomplete, debugging hints, or code execution.</p>
+                <p class="subtitle">
+                    Checks C# syntax only. No AI, autocomplete, debugging hints, or code execution.
+                </p>
             </div>
             <span class="local-badge">Runs locally in your browser</span>
         </div>
 
         <label class="editor-label" for="codeEditor">C# code</label>
+
         <textarea id="codeEditor"
                   class="code-editor"
                   spellcheck="false"
@@ -35,22 +38,23 @@
         </section>
 
         <p class="privacy-note">
-            Your code stays in this browser tab. This page does not send student code to a server.
+            Your code stays in this browser tab.
+            This page does not send student code to a server.
         </p>
     </section>
 </main>
 
 @code {
-    private const string StarterCode = """using System;
+    private const string StarterCode = @"using System;
 
 public class Program
 {
     public static void Main()
     {
-        Console.WriteLine("Hello World");
+        Console.WriteLine(""Hello World"");
     }
 }
-""";
+";
 
     private string Code { get; set; } = StarterCode;
     private string ResultMessage { get; set; } = "Ready.";
@@ -68,13 +72,23 @@ public class Program
         try
         {
             var options = new CSharpParseOptions(LanguageVersion.Latest);
-            var tree = CSharpSyntaxTree.ParseText(Code, options);
-            var hasSyntaxErrors = tree.GetDiagnostics()
-                .Any(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error);
+
+            var tree = CSharpSyntaxTree.ParseText(
+                Code,
+                options
+            );
+
+            var hasSyntaxErrors = tree
+                .GetDiagnostics()
+                .Any(d =>
+                    d.Severity == DiagnosticSeverity.Error
+                );
 
             if (hasSyntaxErrors)
             {
-                ResultMessage = "Syntax error detected. Review your code and try again.";
+                ResultMessage =
+                    "Syntax error detected. Review your code and try again.";
+
                 ResultClass = "error";
             }
             else
@@ -85,7 +99,9 @@ public class Program
         }
         catch
         {
-            ResultMessage = "Unable to check syntax. Please try again.";
+            ResultMessage =
+                "Unable to check syntax. Please try again.";
+
             ResultClass = "error";
         }
     }
