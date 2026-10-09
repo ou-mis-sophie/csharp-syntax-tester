@@ -26,17 +26,4 @@ int x = "hello";
 
 The syntax checker will report `Syntax OK.` because the C# grammar is valid.
 
-## Deploy to GitHub Pages
-
-1. Upload this repository to GitHub.
-2. Go to **Settings → Pages**.
-3. Under **Build and deployment**, set **Source** to **GitHub Actions**.
-4. Push/commit to `main`.
-5. Open **Actions** and wait for **Deploy GitHub Pages** to finish with a green check mark.
-6. Open **Settings → Pages** to find the public site URL.
-
 No API URL, Docker server, VPS, secrets, or paid hosting are required.
-
-## Replacing the earlier Runner project
-
-If you are replacing the previous `csharp-console-runner` repository, delete the old `backend`, `deploy`, `frontend`, `compose.yml`, and old project files, then upload the contents of this repository at the repository root. Keep only this version's `.github`, `Pages`, `wwwroot`, and root project files.
